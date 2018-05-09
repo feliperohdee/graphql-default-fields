@@ -9,39 +9,36 @@ const {
 } = require('graphql');
 
 const withDefaultFields = require('./');
-const SomeBoolean = GraphQLBoolean;
-const SomeFloat = GraphQLFloat;
-const SomeInt = GraphQLInt;
-const SomeList = new GraphQLList(GraphQLString);
-const SomeString = GraphQLString;
-const SomeObj = new GraphQLObjectType({
-    name: 'Obj',
+const getObj = name => new GraphQLObjectType({
+    name,
     fields: {
         boolean: {
-            type: SomeBoolean
+            type: GraphQLBoolean
         },
         float: {
-            type: SomeFloat
+            type: GraphQLFloat
         },
         wrongFloat: {
-            type: SomeFloat,
+            type: GraphQLFloat,
             resolve: () => '10.5'
         },
         int: {
-            type: SomeInt
+            type: GraphQLInt
         },
         wrongInt: {
-            type: SomeInt,
+            type: GraphQLInt,
             resolve: () => '10.5'
         },
         list: {
-            type: SomeList
+            type: new GraphQLList(GraphQLString)
         },
         string: {
-            type: SomeString
+            type: GraphQLString
         }
     }
 });
+
+const SomeObj = getObj('Obj');
 const SomeObjWithDefault = withDefaultFields(SomeObj);
 const SomeObjList = new GraphQLList(SomeObj);
 const SomeObjListWithDefault = new GraphQLList(SomeObjWithDefault);
@@ -66,82 +63,82 @@ const Query = new GraphQLObjectType({
         },
 
         boolean: {
-            type: SomeBoolean
+            type: GraphQLBoolean
         },
         booleanWithNull: {
-            type: SomeBoolean,
+            type: GraphQLBoolean,
             resolve: () => null
         },
         booleanWithAsyncNull: {
-            type: SomeBoolean,
+            type: GraphQLBoolean,
             resolve: () => Promise.resolve(null)
         },
         booleanWithValue: {
-            type: SomeBoolean,
+            type: GraphQLBoolean,
             resolve: () => true
         },
         booleanWithAsyncValue: {
-            type: SomeBoolean,
+            type: GraphQLBoolean,
             resolve: () => Promise.resolve(true)
         },
 
         float: {
-            type: SomeFloat
+            type: GraphQLFloat
         },
         floatWithNull: {
-            type: SomeFloat,
+            type: GraphQLFloat,
             resolve: () => null
         },
         floatWithAsyncNull: {
-            type: SomeFloat,
+            type: GraphQLFloat,
             resolve: () => Promise.resolve(null)
         },
         floatWithValue: {
-            type: SomeFloat,
+            type: GraphQLFloat,
             resolve: () => 10.5
         },
         floatWithAsyncValue: {
-            type: SomeFloat,
+            type: GraphQLFloat,
             resolve: () => Promise.resolve(10.5)
         },
 
         int: {
-            type: SomeInt
+            type: GraphQLInt
         },
         intWithNull: {
-            type: SomeInt,
+            type: GraphQLInt,
             resolve: () => null
         },
         intWithAsyncNull: {
-            type: SomeInt,
+            type: GraphQLInt,
             resolve: () => Promise.resolve(null)
         },
         intWithValue: {
-            type: SomeInt,
+            type: GraphQLInt,
             resolve: () => 10
         },
         intWithAsyncValue: {
-            type: SomeInt,
+            type: GraphQLInt,
             resolve: () => Promise.resolve(10)
         },
 
         list: {
-            type: SomeList
+            type: new GraphQLList(GraphQLString)
         },
         listWithNull: {
-            type: SomeList,
+            type: new GraphQLList(GraphQLString),
             resolve: () => null
         },
         listWithAsyncNull: {
-            type: SomeList,
+            type: new GraphQLList(GraphQLString),
             resolve: () => Promise.resolve(null)
         },
         listWithValue: {
-            type: SomeList,
+            type: new GraphQLList(GraphQLString),
             resolve: () => ['a', 'b', 1, 2]
         },
         listWithAsyncValue: {
-            type: SomeList,
+            type: new GraphQLList(GraphQLString),
             resolve: () => Promise.resolve(['a', 'b', 1, 2])
         },
 
@@ -242,22 +239,22 @@ const Query = new GraphQLObjectType({
         },
 
         string: {
-            type: SomeString
+            type: GraphQLString
         },
         stringWithNull: {
-            type: SomeString,
+            type: GraphQLString,
             resolve: () => null
         },
         stringWithAsyncNull: {
-            type: SomeString,
+            type: GraphQLString,
             resolve: () => Promise.resolve(null)
         },
         stringWithValue: {
-            type: SomeString,
+            type: GraphQLString,
             resolve: () => 'stringValue'
         },
         stringWithAsyncValue: {
-            type: SomeString,
+            type: GraphQLString,
             resolve: () => Promise.resolve('stringValue')
         },
 
@@ -295,4 +292,7 @@ const Query = new GraphQLObjectType({
     }
 });
 
-module.exports = Query;
+module.exports = {
+    getObj,
+    Query
+};

@@ -28,7 +28,7 @@ Normalizes graphql fields to return "zero valued" values when inexistent.
                 }
             });
 
-            const ObjWithDefault = withDefaultFields(Obj);
+            const ObjWithDefault = withDefaultFields(Obj, /* deep: false, reald: typeof GraphQLObjectType */);
 
             // without any values, "Obj" is going return:
             {

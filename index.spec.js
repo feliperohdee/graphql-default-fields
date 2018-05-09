@@ -4,21 +4,52 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const {
     GraphQLSchema,
+    GraphQLObjectType,
     graphql
 } = require('graphql');
 
 const expect = chai.expect;
 const withDefaultFields = require('./');
-const Query = require('./testing');
+const {
+    getObj,
+    Query
+} = require('./testing');
 
 chai.use(sinonChai);
 
 describe('index.js', () => {
+    beforeEach(() => {
+        sinon.spy(_, 'extend');
+    });
+
+    afterEach(() => {
+        _.extend.restore();
+    });
+
     it('should throw', () => {
         expect(() => withDefaultFields({})).to.throw('type should be instance of "GraphQLObjectType".');
     });
 
-    it('should match', done => {
+    it('should let suffix', () => {
+        const newQuery = withDefaultFields(Query);
+
+        expect(newQuery.name).to.equal('QueryWithDefaults');
+    });
+
+    it('should let __haveDefaults for each field', () => {
+        const newQuery = withDefaultFields(Query);
+
+        expect(_.every(newQuery.getFields(), field => field.__haveDefaults === true)).to.be.true;
+        expect(_.extend).to.have.callCount(46);
+    });
+
+    it('should not extend already extended field', () => {
+        withDefaultFields(withDefaultFields((withDefaultFields(Query))));
+
+        expect(_.extend).to.have.callCount(46);
+    });
+
+    it('should match complex object', done => {
         const schema = new GraphQLSchema({
             query: withDefaultFields(Query)
         });
@@ -391,6 +422,61 @@ describe('index.js', () => {
                     }
                 });
 
+                done();
+            });
+    });
+
+    it('should match deep object', done => {
+        const schema = new GraphQLSchema({
+            query: withDefaultFields(new GraphQLObjectType({
+                name: 'Obj1',
+                fields: {
+                    obj: {
+                        type: new GraphQLObjectType({
+                            name: 'Obj2',
+                            fields: {
+                                obj: {
+                                    type: getObj('Obj3')
+                                }
+                            }
+                        })
+                    }
+                }
+            }), true)
+        });
+
+        const result = graphql({
+                schema,
+                source: `{
+                    obj {
+                        obj {
+                            boolean
+                            float
+                            wrongFloat
+                            int
+                            wrongInt
+                            list
+                            string
+                        }
+                    }
+                }`
+            })
+            .then(response => {
+                expect(response).to.deep.equal({
+                    data: {
+                        obj: {
+                            obj: {
+                                boolean: false,
+                                float: 0,
+                                wrongFloat: 10.5,
+                                int: 0,
+                                wrongInt: 10,
+                                list: [],
+                                string: ''
+                            }
+                        }
+                    }
+                });
                 done();
             });
     });
