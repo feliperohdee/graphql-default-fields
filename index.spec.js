@@ -5,6 +5,7 @@ const sinonChai = require('sinon-chai');
 const {
     GraphQLSchema,
     GraphQLObjectType,
+    GraphQLString,
     graphql
 } = require('graphql');
 
@@ -41,6 +42,20 @@ describe('index.js', () => {
 
         expect(_.every(newQuery.getFields(), field => field.__haveDefaults === true)).to.be.true;
         expect(_.extend).to.have.callCount(46);
+    });
+    
+    it('should prevent when __preventDefaults', () => {
+        const newQuery = withDefaultFields(new GraphQLObjectType({
+            name: 'Prevented',
+            fields: {
+                string: {
+                    __preventDefaults: true,
+                    type: GraphQLString
+                }
+            }
+        }));
+
+        expect(_.extend).not.to.have.been.called;
     });
 
     it('should not extend already extended field', () => {

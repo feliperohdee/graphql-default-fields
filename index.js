@@ -68,7 +68,7 @@ const doIt = (type, deep = false, realm = GraphQLObjectType) => {
     }
 
     const fields = _.reduce(type._typeConfig.fields, (reduction, field, key) => {
-        if (field.__haveDefaults) {
+        if (field.__haveDefaults || field.__preventDefaults) {
             reduction[key] = field;
         } else {
             reduction[key] = extendField(field, key, deep, realm);
