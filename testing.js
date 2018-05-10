@@ -8,9 +8,7 @@ const {
     GraphQLString,
 } = require('graphql');
 
-const {
-    withDefaultFields
-} = require('./');
+const withDefaultFields = require('./');
 
 const getObj = name => new GraphQLObjectType({
     name,
@@ -291,7 +289,7 @@ const Query = new GraphQLObjectType({
                 list: ['a', 'b'],
                 string: 'stringValue'
             }])
-        },
+        }
     }
 });
 

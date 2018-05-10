@@ -10,10 +10,7 @@ const {
 } = require('graphql');
 
 const expect = chai.expect;
-const {
-    clear,
-    withDefaultFields
-} = require('./');
+const withDefaultFields = require('./');
 const {
     getObj,
     Query
@@ -22,12 +19,21 @@ const {
 chai.use(sinonChai);
 
 describe('index.js', () => {
+    let cache;
+    let cached = Symbol;
+
     beforeEach(() => {
         sinon.spy(_, 'extend');
+        cache = {
+            get: sinon.stub()
+                .onFirstCall()
+                .returns(null)
+                .returns(cached),
+            set: sinon.stub(),
+        };
     });
 
     afterEach(() => {
-        clear();
         _.extend.restore();
     });
 
@@ -42,12 +48,12 @@ describe('index.js', () => {
     });
 
     it('should let __haveDefaults for each field', () => {
-        const newQuery = withDefaultFields(Query);
+        const newQuery = withDefaultFields(Query, false, null, null);
 
         expect(_.every(newQuery.getFields(), field => field.__haveDefaults === true)).to.be.true;
         expect(_.extend).to.have.callCount(46);
     });
-    
+
     it('should prevent when __preventDefaults', () => {
         const newQuery = withDefaultFields(new GraphQLObjectType({
             name: 'Prevented',
@@ -63,9 +69,18 @@ describe('index.js', () => {
     });
 
     it('should not extend already extended field', () => {
-        withDefaultFields(withDefaultFields((withDefaultFields(Query))));
+        withDefaultFields(withDefaultFields((withDefaultFields(Query, false, null, null))));
 
         expect(_.extend).to.have.callCount(46);
+    });
+
+    it('should get and set cache', () => {
+        withDefaultFields(Query, false, null, cache);
+
+        expect(cache.get).to.have.been.calledWithExactly('QueryWithDefaults');
+        expect(cache.set).to.have.been.calledWithExactly('QueryWithDefaults', sinon.match.object);
+
+        expect(withDefaultFields(Query, false, null, cache)).to.deep.equal(cached);
     });
 
     it('should match complex object', done => {
@@ -73,7 +88,7 @@ describe('index.js', () => {
             query: withDefaultFields(Query)
         });
 
-        const result = graphql({
+        graphql({
                 schema,
                 source: `{
                     enum 
@@ -449,7 +464,7 @@ describe('index.js', () => {
         const schema = new GraphQLSchema({
             query: withDefaultFields(new GraphQLObjectType({
                 name: 'Obj1',
-                fields: {
+                fields: () => ({
                     obj: {
                         type: new GraphQLObjectType({
                             name: 'Obj2',
@@ -460,11 +475,11 @@ describe('index.js', () => {
                             }
                         })
                     }
-                }
+                })
             }), true)
         });
 
-        const result = graphql({
+        graphql({
                 schema,
                 source: `{
                     obj {

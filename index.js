@@ -3,7 +3,7 @@ const {
     GraphQLObjectType
 } = require('graphql');
 
-let cache = {};
+const defaultCache = new Map();
 const defaults = {
     'Boolean': false,
     'Float': 0,
@@ -12,16 +12,12 @@ const defaults = {
     'Object': {}
 };
 
-const clear = () => {
-    cache = {};
-};
-
-const matchDefault = typeString => {
-    if (_.first(typeString) === '[' && _.last(typeString) === ']') {
+const matchDefault = type => {
+    if (_.first(type) === '[' && _.last(type) === ']') {
         return [];
     }
 
-    const defaultType = defaults[typeString];
+    const defaultType = defaults[type];
 
     if (_.isNil(defaultType)) {
         return null;
@@ -30,17 +26,17 @@ const matchDefault = typeString => {
     return defaultType;
 };
 
-const extendField = (field, key, deep = false, realm = GraphQLObjectType) => {
-    const isObject = field.type instanceof realm;
-    const typeString = isObject ? 'Object' : field.type.toString();
-    const defaultValue = matchDefault(typeString);
+const extendField = (field, key, deep, realm, cache) => {
+    const isObjectType = field.type instanceof realm;
+    const type = isObjectType ? 'Object' : field.type.toString();
+    const defaultValue = matchDefault(type);
 
     const responseOrDefault = response => {
         if (_.isNil(response)) {
             return defaultValue;
         }
 
-        if (typeString === 'Int') {
+        if (type === 'Int') {
             return _.parseInt(response);
         }
 
@@ -58,29 +54,36 @@ const extendField = (field, key, deep = false, realm = GraphQLObjectType) => {
     } : obj => {
         return responseOrDefault(obj && obj[key]);
     };
-
+    
     return _.extend({}, field, {
         __haveDefaults: true,
         resolve,
-        type: deep && isObject ? withDefaultFields(field.type, deep, realm) : field.type
+        type: deep && isObjectType ? withDefaultFields(field.type, deep, realm, cache) : field.type
     });
 };
 
-const withDefaultFields = (type, deep = false, realm = GraphQLObjectType) => {
+const withDefaultFields = (type, deep = false, realm = null, cache = defaultCache) => {
+    if(!realm) {
+        realm = GraphQLObjectType;
+    }
+
     if (!(type instanceof realm)) {
         throw new Error('type should be instance of "GraphQLObjectType".');
     }
-    const name = type.name + 'WithDefaults';
 
-    if (cache[name]) {
-        return cache[name];
+    const name = type.name + 'WithDefaults';
+    const cached = cache && cache.get(name);
+
+    if (cached) {
+        return cached;
     }
 
-    cache[name] = cache[name] || new realm({
+    const fields = type._typeConfig.fields;
+    const newType = new realm({
         astNode: type.astNode,
         description: type.description,
         extensionASTNodes: type.extensionASTNodes,
-        fields: _.reduce(type._typeConfig.fields, (reduction, field, key) => {
+        fields: _.reduce(_.isFunction(fields) ? fields() : fields, (reduction, field, key) => {
             if (field.__haveDefaults || field.__preventDefaults) {
                 reduction[key] = field;
             } else {
@@ -93,10 +96,9 @@ const withDefaultFields = (type, deep = false, realm = GraphQLObjectType) => {
         name: name
     });
 
-    return cache[name];
+    cache && cache.set(name, newType);
+
+    return newType;
 };
 
-module.exports = {
-    clear,
-    withDefaultFields
-};
+module.exports = withDefaultFields;
