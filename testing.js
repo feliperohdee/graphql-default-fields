@@ -8,7 +8,10 @@ const {
     GraphQLString,
 } = require('graphql');
 
-const withDefaultFields = require('./');
+const {
+    withDefaultFields
+} = require('./');
+
 const getObj = name => new GraphQLObjectType({
     name,
     fields: {

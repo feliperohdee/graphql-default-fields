@@ -3,13 +3,17 @@ const {
     GraphQLObjectType
 } = require('graphql');
 
-const cache = {};
+let cache = {};
 const defaults = {
     'Boolean': false,
     'Float': 0,
     'Int': 0,
     'String': '',
     'Object': {}
+};
+
+const clear = () => {
+    cache = {};
 };
 
 const matchDefault = typeString => {
@@ -58,40 +62,41 @@ const extendField = (field, key, deep = false, realm = GraphQLObjectType) => {
     return _.extend({}, field, {
         __haveDefaults: true,
         resolve,
-        type: deep && isObject ? doIt(field.type, deep, realm) : field.type
+        type: deep && isObject ? withDefaultFields(field.type, deep, realm) : field.type
     });
 };
 
-const doIt = (type, deep = false, realm = GraphQLObjectType) => {
+const withDefaultFields = (type, deep = false, realm = GraphQLObjectType) => {
     if (!(type instanceof realm)) {
         throw new Error('type should be instance of "GraphQLObjectType".');
     }
+    const name = type.name + 'WithDefaults';
 
-    const fields = _.reduce(type._typeConfig.fields, (reduction, field, key) => {
-        if (field.__haveDefaults || field.__preventDefaults) {
-            reduction[key] = field;
-        } else {
-            reduction[key] = extendField(field, key, deep, realm);
-        }
+    if (cache[name]) {
+        return cache[name];
+    }
 
-        return reduction;
-    }, {});
-
-    const newName = type.name + 'WithDefaults';
-    const newType = cache[newName] || new realm({
+    cache[name] = cache[name] || new realm({
         astNode: type.astNode,
         description: type.description,
         extensionASTNodes: type.extensionASTNodes,
-        fields,
+        fields: _.reduce(type._typeConfig.fields, (reduction, field, key) => {
+            if (field.__haveDefaults || field.__preventDefaults) {
+                reduction[key] = field;
+            } else {
+                reduction[key] = extendField(field, key, deep, realm);
+            }
+    
+            return reduction;
+        }, {}),
         isTypeOf: type.isTypeOf,
-        name: newName
+        name: name
     });
 
-    if(!cache[newName]) {
-        cache[newName] = newType;
-    }
-
-    return newType;
+    return cache[name];
 };
 
-module.exports = doIt;
+module.exports = {
+    clear,
+    withDefaultFields
+};

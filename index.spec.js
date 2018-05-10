@@ -10,7 +10,10 @@ const {
 } = require('graphql');
 
 const expect = chai.expect;
-const withDefaultFields = require('./');
+const {
+    clear,
+    withDefaultFields
+} = require('./');
 const {
     getObj,
     Query
@@ -24,6 +27,7 @@ describe('index.js', () => {
     });
 
     afterEach(() => {
+        clear();
         _.extend.restore();
     });
 
