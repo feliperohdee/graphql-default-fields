@@ -3,7 +3,6 @@ const {
     GraphQLObjectType
 } = require('graphql');
 
-const defaultCache = new Map();
 const defaults = {
     'Boolean': false,
     'Float': 0,
@@ -26,11 +25,10 @@ const matchDefault = type => {
     return defaultType;
 };
 
-const extendField = (field, key, deep, realm, cache) => {
+let extendField = (field, key, realm) => {
     const isObjectType = field.type instanceof realm;
     const type = isObjectType ? 'Object' : field.type.toString();
     const defaultValue = matchDefault(type);
-
     const responseOrDefault = response => {
         if (_.isNil(response)) {
             return defaultValue;
@@ -54,51 +52,34 @@ const extendField = (field, key, deep, realm, cache) => {
     } : obj => {
         return responseOrDefault(obj && obj[key]);
     };
-    
-    return _.extend({}, field, {
-        __haveDefaults: true,
+
+    return {
+        ...field,
         resolve,
-        type: deep && isObjectType ? withDefaultFields(field.type, deep, realm, cache) : field.type
-    });
+        __withDefaults: true
+    };
 };
 
-const withDefaultFields = (type, deep = false, realm = null, cache = defaultCache) => {
-    if(!realm) {
-        realm = GraphQLObjectType;
-    }
-
-    if (!(type instanceof realm)) {
-        throw new Error('type should be instance of "GraphQLObjectType".');
-    }
-
-    const name = type.name + 'WithDefaults';
-    const cached = cache && cache.get(name);
-
-    if (cached) {
-        return cached;
-    }
-
-    const fields = type._typeConfig.fields;
-    const newType = new realm({
-        astNode: type.astNode,
-        description: type.description,
-        extensionASTNodes: type.extensionASTNodes,
-        fields: _.reduce(_.isFunction(fields) ? fields() : fields, (reduction, field, key) => {
-            if (field.__haveDefaults || field.__preventDefaults) {
-                reduction[key] = field;
-            } else {
-                reduction[key] = extendField(field, key, deep, realm);
-            }
+module.exports = (realm = GraphQLObjectType) => {
+    class WithDefaults extends realm {
+        constructor(args) {
+            const fields = _.isFunction(args.fields) ? args.fields() : args.fields;
     
-            return reduction;
-        }, {}),
-        isTypeOf: type.isTypeOf,
-        name: name
-    });
+            args.fields = _.reduce(fields, (reduction, field, key) => {
+                if (field.__preventDefaults) {
+                    reduction[key] = field;
+                } else {
+                    reduction[key] = extendField(field, key, realm);
+                }
+    
+                return reduction;
+            }, {});
+    
+            super(args);
+        }
+    }
 
-    cache && cache.set(name, newType);
-
-    return newType;
+    return {
+        GraphQLObjectType: WithDefaults
+    };
 };
-
-module.exports = withDefaultFields;
