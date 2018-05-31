@@ -10,11 +10,8 @@ const {
 } = require('graphql');
 
 const expect = chai.expect;
-const withDefaultFields = require('./');
-const {
-    getObj,
-    Query
-} = require('./testing');
+const withDefaults = require('./')();
+const Query = require('./testing');
 
 chai.use(sinonChai);
 
@@ -37,25 +34,12 @@ describe('index.js', () => {
         _.extend.restore();
     });
 
-    it('should throw', () => {
-        expect(() => withDefaultFields({})).to.throw('type should be instance of "GraphQLObjectType".');
-    });
-
-    it('should let suffix', () => {
-        const newQuery = withDefaultFields(Query);
-
-        expect(newQuery.name).to.equal('QueryWithDefaults');
-    });
-
-    it('should let __haveDefaults for each field', () => {
-        const newQuery = withDefaultFields(Query, false, null, null);
-
-        expect(_.every(newQuery.getFields(), field => field.__haveDefaults === true)).to.be.true;
-        expect(_.extend).to.have.callCount(46);
+    it('should let __withDefaults for each field', () => {
+        expect(_.every(Query.getFields(), field => field.__withDefaults === true)).to.be.true;
     });
 
     it('should prevent when __preventDefaults', () => {
-        const newQuery = withDefaultFields(new GraphQLObjectType({
+        const newQuery = new withDefaults.GraphQLObjectType({
             name: 'Prevented',
             fields: {
                 string: {
@@ -63,29 +47,14 @@ describe('index.js', () => {
                     type: GraphQLString
                 }
             }
-        }));
+        });
 
-        expect(_.extend).not.to.have.been.called;
-    });
-
-    it('should not extend already extended field', () => {
-        withDefaultFields(withDefaultFields((withDefaultFields(Query, false, null, null))));
-
-        expect(_.extend).to.have.callCount(46);
-    });
-
-    it('should get and set cache', () => {
-        withDefaultFields(Query, false, null, cache);
-
-        expect(cache.get).to.have.been.calledWithExactly('QueryWithDefaults');
-        expect(cache.set).to.have.been.calledWithExactly('QueryWithDefaults', sinon.match.object);
-
-        expect(withDefaultFields(Query, false, null, cache)).to.deep.equal(cached);
+        expect(_.every(newQuery.getFields(), field => !field.__withDefaults)).to.be.true;
     });
 
     it('should match complex object', done => {
         const schema = new GraphQLSchema({
-            query: withDefaultFields(Query)
+            query: Query
         });
 
         graphql({
@@ -456,61 +425,6 @@ describe('index.js', () => {
                     }
                 });
 
-                done();
-            });
-    });
-
-    it('should match deep object', done => {
-        const schema = new GraphQLSchema({
-            query: withDefaultFields(new GraphQLObjectType({
-                name: 'Obj1',
-                fields: () => ({
-                    obj: {
-                        type: new GraphQLObjectType({
-                            name: 'Obj2',
-                            fields: {
-                                obj: {
-                                    type: getObj('Obj3')
-                                }
-                            }
-                        })
-                    }
-                })
-            }), true)
-        });
-
-        graphql({
-                schema,
-                source: `{
-                    obj {
-                        obj {
-                            boolean
-                            float
-                            wrongFloat
-                            int
-                            wrongInt
-                            list
-                            string
-                        }
-                    }
-                }`
-            })
-            .then(response => {
-                expect(response).to.deep.equal({
-                    data: {
-                        obj: {
-                            obj: {
-                                boolean: false,
-                                float: 0,
-                                wrongFloat: 10.5,
-                                int: 0,
-                                wrongInt: 10,
-                                list: [],
-                                string: ''
-                            }
-                        }
-                    }
-                });
                 done();
             });
     });

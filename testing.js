@@ -8,42 +8,49 @@ const {
     GraphQLString,
 } = require('graphql');
 
-const withDefaultFields = require('./');
+const withDefaults = require('./')();
+
+const fields = {
+    boolean: {
+        type: GraphQLBoolean
+    },
+    float: {
+        type: GraphQLFloat
+    },
+    wrongFloat: {
+        type: GraphQLFloat,
+        resolve: () => '10.5'
+    },
+    int: {
+        type: GraphQLInt
+    },
+    wrongInt: {
+        type: GraphQLInt,
+        resolve: () => '10.5'
+    },
+    list: {
+        type: new GraphQLList(GraphQLString)
+    },
+    string: {
+        type: GraphQLString
+    }
+};
 
 const getObj = name => new GraphQLObjectType({
     name,
-    fields: {
-        boolean: {
-            type: GraphQLBoolean
-        },
-        float: {
-            type: GraphQLFloat
-        },
-        wrongFloat: {
-            type: GraphQLFloat,
-            resolve: () => '10.5'
-        },
-        int: {
-            type: GraphQLInt
-        },
-        wrongInt: {
-            type: GraphQLInt,
-            resolve: () => '10.5'
-        },
-        list: {
-            type: new GraphQLList(GraphQLString)
-        },
-        string: {
-            type: GraphQLString
-        }
-    }
+    fields
+});
+
+const getDefaultObj = name => new withDefaults.GraphQLObjectType({
+    name,
+    fields
 });
 
 const SomeObj = getObj('Obj');
-const SomeObjWithDefault = withDefaultFields(SomeObj);
+const SomeObjWithDefault = getDefaultObj('DefaultObj');
 const SomeObjList = new GraphQLList(SomeObj);
 const SomeObjListWithDefault = new GraphQLList(SomeObjWithDefault);
-const Query = new GraphQLObjectType({
+const Query = new withDefaults.GraphQLObjectType({
     name: 'Query',
     fields: {
         enum: {
@@ -293,7 +300,4 @@ const Query = new GraphQLObjectType({
     }
 });
 
-module.exports = {
-    getObj,
-    Query
-};
+module.exports = Query;

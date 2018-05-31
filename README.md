@@ -6,7 +6,9 @@ Normalizes graphql fields to return "zero valued" values when inexistent.
 
 ## Usage
 
-            const withDefaultFields = require('smallorange-graphql-default-fields');
+            const graphql = require('graphql');
+            const withDefaults = require('smallorange-graphql-default-fields')(graphql.GraphQLObjectType);
+            
             const Obj = new GraphQLObjectType({
                 name: 'Obj',
                 fields: {
@@ -28,8 +30,6 @@ Normalizes graphql fields to return "zero valued" values when inexistent.
                 }
             });
 
-            const ObjWithDefault = withDefaultFields(Obj, /* deep: false, realm: typeof GraphQLObjectType */);
-
             // without any values, "Obj" is going return:
             {
                 boolean: null,
@@ -38,8 +38,29 @@ Normalizes graphql fields to return "zero valued" values when inexistent.
                 list: null,
                 string: null
             }
+            
+            const ObjWithDefaults = new withDefaults.GraphQLObjectType({
+                name: 'ObjWithDefaults',
+                fields: {
+                    boolean: {
+                        type: GraphQLBoolean
+                    },
+                    float: {
+                        type: GraphQLFloat
+                    },
+                    int: {
+                        type: GraphQLInt
+                    },
+                    list: {
+                        type: new GraphQLList(GraphQLString)
+                    },
+                    string: {
+                        type: GraphQLString
+                    }
+                }
+            });
 
-            // without any values, "ObjWithDefault" is going return:
+            // without any values, "ObjWithDefaults" is going return:
             {
                 boolean: false,
                 float: 0,
