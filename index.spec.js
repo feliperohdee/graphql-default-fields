@@ -325,27 +325,27 @@ describe('index.js', () => {
                         objWithDefault: {
                             boolean: false,
                             float: 0,
-                            wrongFloat: 10.5,
+                            wrongFloat: 0,
                             int: 0,
-                            wrongInt: 10,
+                            wrongInt: 0,
                             list: [],
                             string: ''
                         },
                         objWithDefaultWithNull: {
                             boolean: false,
                             float: 0,
-                            wrongFloat: 10.5,
+                            wrongFloat: 0,
                             int: 0,
-                            wrongInt: 10,
+                            wrongInt: 0,
                             list: [],
                             string: ''
                         },
                         objWithDefaultWithAsyncNull: {
                             boolean: false,
                             float: 0,
-                            wrongFloat: 10.5,
+                            wrongFloat: 0,
                             int: 0,
-                            wrongInt: 10,
+                            wrongInt: 0,
                             list: [],
                             string: ''
                         },
@@ -426,6 +426,7 @@ describe('index.js', () => {
                 });
 
                 done();
-            });
+            })
+            .catch(done);
     });
 });

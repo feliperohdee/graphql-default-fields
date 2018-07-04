@@ -45,6 +45,10 @@ let extendField = (field, key, realm) => {
     };
 
     const resolve = field.resolve ? (obj, args, context, info) => {
+        if(obj && obj.__default__) {
+            return responseOrDefault();
+        } 
+        
         const resolved = field.resolve(obj, args, context, info);
 
         if (resolved && resolved.then) {
