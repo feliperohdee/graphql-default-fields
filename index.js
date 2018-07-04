@@ -3,14 +3,14 @@ const {
     GraphQLObjectType
 } = require('graphql');
 
-class DefaultObject {}
-
 const defaults = {
     'Boolean': false,
     'Float': 0,
     'Int': 0,
     'String': '',
-    'Object': new DefaultObject()
+    'Object': {
+        __default__: true
+    }
 };
 
 const matchDefault = type => {
@@ -67,17 +67,17 @@ module.exports = (realm = GraphQLObjectType) => {
     class WithDefaults extends realm {
         constructor(args) {
             const fields = _.isFunction(args.fields) ? args.fields() : args.fields;
-    
+
             args.fields = _.reduce(fields, (reduction, field, key) => {
                 if (field.__preventDefaults) {
                     reduction[key] = field;
                 } else {
                     reduction[key] = extendField(field, key, realm);
                 }
-    
+
                 return reduction;
             }, {});
-    
+
             super(args);
         }
     }
