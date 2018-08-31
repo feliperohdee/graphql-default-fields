@@ -43,19 +43,24 @@ Normalizes graphql fields to return "zero valued" values when inexistent.
                 name: 'ObjWithDefaults',
                 fields: {
                     boolean: {
-                        type: GraphQLBoolean
+                        type: GraphQLBoolean,
+                        defaultValue: true
                     },
                     float: {
-                        type: GraphQLFloat
+                        type: GraphQLFloat,
+                        defaultValue: 10.5
                     },
                     int: {
-                        type: GraphQLInt
+                        type: GraphQLInt,
+                        defaultValue: 10
                     },
                     list: {
-                        type: new GraphQLList(GraphQLString)
+                        type: new GraphQLList(GraphQLString),
+                        defaultValue: ['string']
                     },
                     string: {
-                        type: GraphQLString
+                        type: GraphQLString,
+                        defaultValue: 'string'
                     }
                 }
             });

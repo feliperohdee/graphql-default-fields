@@ -30,7 +30,7 @@ const matchDefault = type => {
 let extendField = (field, key, realm) => {
     const isObjectType = field.type instanceof realm;
     const type = isObjectType ? 'Object' : field.type.toString();
-    const defaultValue = matchDefault(type);
+    const defaultValue = field.defaultValue || matchDefault(type);
 
     const responseOrDefault = response => {
         if (_.isNil(response)) {

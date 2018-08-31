@@ -1,6 +1,6 @@
 {
   "name": "smallorange-graphql-default-fields",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
