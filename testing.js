@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const {
     GraphQLBoolean,
     GraphQLEnumType,
@@ -5,10 +6,56 @@ const {
     GraphQLInt,
     GraphQLList,
     GraphQLObjectType,
+    GraphQLScalarType,
     GraphQLString,
 } = require('graphql');
+const {
+    Kind
+} = require('graphql/language');
 
 const withDefaults = require('./')();
+
+function parseLiteral(ast) {
+    switch (ast.kind) {
+        case Kind.STRING:
+        case Kind.BOOLEAN:
+            return ast.value;
+        case Kind.INT:
+        case Kind.FLOAT:
+            return parseFloat(ast.value);
+        case Kind.OBJECT: {
+                const value = {};
+
+                ast.fields.forEach((field) => {
+                    value[field.name.value] = parseLiteral(field.value);
+                });
+
+                return value;
+            }
+        case Kind.LIST:
+            return ast.values.map(parseLiteral);
+        default:
+            return null;
+    }
+}
+
+const identity = value => {
+    if(_.isEmpty(value)) {
+        return null;
+    }
+
+    return value;
+};
+
+const Json = new GraphQLScalarType({
+    name: 'Json',
+    description: 'The `Json` scalar type represents JSON values as specified by ' +
+        '[ECMA-404](http://www.ecma-international.org/' +
+        'publications/files/ECMA-ST/ECMA-404.pdf).',
+    serialize: identity,
+    parseValue: identity,
+    parseLiteral
+});
 
 const fields = {
     boolean: {
@@ -49,6 +96,15 @@ const fields = {
         type: GraphQLInt,
         resolve: () => '10.5',
         defaultValue: 10
+    },
+    json: {
+        type: Json
+    },
+    jsonWithDefault: {
+        type: Json,
+        defaultValue: {
+            json: 'json'
+        }
     },
     list: {
         type: new GraphQLList(GraphQLString)
@@ -171,6 +227,36 @@ const Query = new withDefaults.GraphQLObjectType({
             type: GraphQLInt,
             resolve: () => Promise.resolve(10)
         },
+        
+        json: {
+            type: Json
+        },
+        jsonWithDefault: {
+            type: Json,
+            defaultValue: {
+                json: 'json'
+            }
+        },
+        jsonWithNull: {
+            type: Json,
+            resolve: () => null
+        },
+        jsonWithAsyncNull: {
+            type: Json,
+            resolve: () => Promise.resolve(null)
+        },
+        jsonWithValue: {
+            type: Json,
+            resolve: () => ({
+                json: 'json'
+            })
+        },
+        jsonWithAsyncValue: {
+            type: Json,
+            resolve: () => Promise.resolve({
+                json: 'json'
+            })
+        },
 
         list: {
             type: new GraphQLList(GraphQLString)
@@ -213,6 +299,9 @@ const Query = new withDefaults.GraphQLObjectType({
                 boolean: true,
                 float: 10,
                 int: 10,
+                json: {
+                    json: 'jsonValue'
+                },
                 list: ['a', 'b'],
                 string: 'stringValue'
             })
@@ -223,6 +312,9 @@ const Query = new withDefaults.GraphQLObjectType({
                 boolean: true,
                 float: 10,
                 int: 10,
+                json: {
+                    json: 'jsonValue'
+                },
                 list: ['a', 'b'],
                 string: 'stringValue'
             })
@@ -245,6 +337,9 @@ const Query = new withDefaults.GraphQLObjectType({
                 boolean: true,
                 float: 10,
                 int: 10,
+                json: {
+                    json: 'jsonValue'
+                },
                 list: ['a', 'b'],
                 string: 'stringValue'
             })
@@ -255,6 +350,9 @@ const Query = new withDefaults.GraphQLObjectType({
                 boolean: true,
                 float: 10,
                 int: 10,
+                json: {
+                    json: 'jsonValue'
+                },
                 list: ['a', 'b'],
                 string: 'stringValue'
             })
@@ -277,6 +375,9 @@ const Query = new withDefaults.GraphQLObjectType({
                 boolean: true,
                 float: 10,
                 int: 10,
+                json: {
+                    json: 'jsonValue'
+                },
                 list: ['a', 'b'],
                 string: 'stringValue'
             }]
@@ -287,6 +388,9 @@ const Query = new withDefaults.GraphQLObjectType({
                 boolean: true,
                 float: 10,
                 int: 10,
+                json: {
+                    json: 'jsonValue'
+                },
                 list: ['a', 'b'],
                 string: 'stringValue'
             }])
@@ -333,6 +437,9 @@ const Query = new withDefaults.GraphQLObjectType({
                 boolean: true,
                 float: 10,
                 int: 10,
+                json: {
+                    json: 'jsonValue'
+                },
                 list: ['a', 'b'],
                 string: 'stringValue'
             }]
@@ -343,6 +450,9 @@ const Query = new withDefaults.GraphQLObjectType({
                 boolean: true,
                 float: 10,
                 int: 10,
+                json: {
+                    json: 'jsonValue'
+                },
                 list: ['a', 'b'],
                 string: 'stringValue'
             }])

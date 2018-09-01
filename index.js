@@ -7,6 +7,7 @@ const defaults = {
     'Boolean': false,
     'Float': 0,
     'Int': 0,
+    'Json': null,
     'String': '',
     'Object': {
         __default__: true

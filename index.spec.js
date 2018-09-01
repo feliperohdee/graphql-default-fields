@@ -82,6 +82,13 @@ describe('index.js', () => {
                     intWithAsyncNull
                     intWithValue
                     intWithAsyncValue
+                    
+                    json
+                    jsonWithDefault
+                    jsonWithNull
+                    jsonWithAsyncNull
+                    jsonWithValue
+                    jsonWithAsyncValue
 
                     list
                     listWithDefault
@@ -97,6 +104,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -109,6 +118,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -121,6 +132,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -133,6 +146,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -145,6 +160,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -162,6 +179,8 @@ describe('index.js', () => {
                         intWithDefault
                         wrongInt
                         wrongIntWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -178,6 +197,8 @@ describe('index.js', () => {
                         intWithDefault
                         wrongInt
                         wrongIntWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -194,6 +215,8 @@ describe('index.js', () => {
                         intWithDefault
                         wrongInt
                         wrongIntWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -210,6 +233,8 @@ describe('index.js', () => {
                         intWithDefault
                         wrongInt
                         wrongIntWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -226,6 +251,8 @@ describe('index.js', () => {
                         intWithDefault
                         wrongInt
                         wrongIntWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -239,6 +266,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -251,6 +280,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -263,6 +294,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -276,6 +309,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -288,6 +323,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -300,6 +337,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -312,6 +351,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -324,6 +365,8 @@ describe('index.js', () => {
                         floatWithDefault
                         int
                         intWithDefault
+                        json
+                        jsonWithDefault
                         list
                         listWithDefault
                         string
@@ -360,6 +403,18 @@ describe('index.js', () => {
                         intWithValue: 10,
                         intWithAsyncValue: 10,
                         intWithDefault: 10,
+                        json: null,
+                        jsonWithNull: null,
+                        jsonWithAsyncNull: null,
+                        jsonWithValue: {
+                            json: 'json'
+                        },
+                        jsonWithAsyncValue: {
+                            json: 'json'
+                        },
+                        jsonWithDefault: {
+                            json: 'json'
+                        },
                         list: [],
                         listWithNull: [],
                         listWithAsyncNull: [],
@@ -385,6 +440,8 @@ describe('index.js', () => {
                             floatWithDefault: null,
                             int: null,
                             intWithDefault: null,
+                            json: null,
+                            jsonWithDefault: null,
                             list: null,
                             listWithDefault: null,
                             string: null,
@@ -397,6 +454,8 @@ describe('index.js', () => {
                             floatWithDefault: null,
                             int: null,
                             intWithDefault: null,
+                            json: null,
+                            jsonWithDefault: null,
                             list: null,
                             listWithDefault: null,
                             string: null,
@@ -409,6 +468,8 @@ describe('index.js', () => {
                             floatWithDefault: null,
                             int: null,
                             intWithDefault: null,
+                            json: null,
+                            jsonWithDefault: null,
                             list: null,
                             listWithDefault: null,
                             string: null,
@@ -421,6 +482,10 @@ describe('index.js', () => {
                             floatWithDefault: null,
                             int: 10,
                             intWithDefault: null,
+                            json: {
+                                json: 'jsonValue'
+                            },
+                            jsonWithDefault: null,
                             list: ['a', 'b'],
                             listWithDefault: null,
                             string: 'stringValue',
@@ -433,6 +498,10 @@ describe('index.js', () => {
                             floatWithDefault: null,
                             int: 10,
                             intWithDefault: null,
+                            json: {
+                                json: 'jsonValue'
+                            },
+                            jsonWithDefault: null,
                             list: ['a', 'b'],
                             listWithDefault: null,
                             string: 'stringValue',
@@ -449,6 +518,10 @@ describe('index.js', () => {
                             wrongInt: 0,
                             intWithDefault: 10,
                             wrongIntWithDefault: 10,
+                            json: null,
+                            jsonWithDefault: {
+                                json: 'json'
+                            },
                             list: [],
                             listWithDefault: ['string'],
                             string: '',
@@ -465,6 +538,10 @@ describe('index.js', () => {
                             wrongInt: 0,
                             intWithDefault: 10,
                             wrongIntWithDefault: 10,
+                            json: null,
+                            jsonWithDefault: {
+                                json: 'json'
+                            },
                             list: [],
                             listWithDefault: ['string'],
                             string: '',
@@ -481,6 +558,10 @@ describe('index.js', () => {
                             wrongInt: 0,
                             intWithDefault: 10,
                             wrongIntWithDefault: 10,
+                            json: null,
+                            jsonWithDefault: {
+                                json: 'json'
+                            },
                             list: [],
                             listWithDefault: ['string'],
                             string: '',
@@ -497,6 +578,12 @@ describe('index.js', () => {
                             wrongInt: 10,
                             intWithDefault: 10,
                             wrongIntWithDefault: 10,
+                            json: {
+                                json: 'jsonValue'
+                            },
+                            jsonWithDefault: {
+                                json: 'json'
+                            },
                             list: ['a', 'b'],
                             listWithDefault: ['string'],
                             string: 'stringValue',
@@ -513,6 +600,12 @@ describe('index.js', () => {
                             intWithDefault: 10,
                             wrongInt: 10,
                             wrongIntWithDefault: 10,
+                            json: {
+                                json: 'jsonValue'
+                            },
+                            jsonWithDefault: {
+                                json: 'json'
+                            },
                             list: ['a', 'b'],
                             listWithDefault: ['string'],
                             string: 'stringValue',
@@ -526,6 +619,10 @@ describe('index.js', () => {
                             floatWithDefault: null,
                             int: 10,
                             intWithDefault: null,
+                            json: {
+                                json: 'jsonValue'
+                            },
+                            jsonWithDefault: null,
                             list: ['a', 'b'],
                             listWithDefault: null,
                             string: 'stringValue',
@@ -538,6 +635,10 @@ describe('index.js', () => {
                             floatWithDefault: null,
                             int: 10,
                             intWithDefault: null,
+                            json: {
+                                json: 'jsonValue'
+                            },
+                            jsonWithDefault: null,
                             list: ['a', 'b'],
                             listWithDefault: null,
                             string: 'stringValue',
@@ -553,6 +654,12 @@ describe('index.js', () => {
                             floatWithDefault: 10.5,
                             int: 10,
                             intWithDefault: 10,
+                            json: {
+                                json: 'jsonValue'
+                            },
+                            jsonWithDefault: {
+                                json: 'json'
+                            },
                             list: ['a', 'b'],
                             listWithDefault: ['string'],
                             string: 'stringValue',
@@ -565,6 +672,12 @@ describe('index.js', () => {
                             floatWithDefault: 10.5,
                             int: 10,
                             intWithDefault: 10,
+                            json: {
+                                json: 'jsonValue'
+                            },
+                            jsonWithDefault: {
+                                json: 'json'
+                            },
                             list: ['a', 'b'],
                             listWithDefault: ['string'],
                             string: 'stringValue',
