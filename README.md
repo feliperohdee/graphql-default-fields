@@ -1,13 +1,11 @@
-[![CircleCI](https://circleci.com/gh/feliperohdee/smallorange-graphql-default-fields.svg?style=svg)](https://circleci.com/gh/feliperohdee/smallorange-graphql-default-fields)
+# GraphQL Default Fields
 
-# Small Orange GraphQL Default Fields
-
-Normalizes graphql fields to return "zero valued" values when inexistent.
+It normalizes graphql fields to return "zero valued" values when inexistent.
 
 ## Usage
 
             const graphql = require('graphql');
-            const withDefaults = require('smallorange-graphql-default-fields')(graphql.GraphQLObjectType);
+            const withDefaults = require('graphql-default-fields')(graphql.GraphQLObjectType);
             
             const Obj = new GraphQLObjectType({
                 name: 'Obj',

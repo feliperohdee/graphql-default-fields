@@ -7,7 +7,7 @@ const {
     GraphQLList,
     GraphQLObjectType,
     GraphQLScalarType,
-    GraphQLString,
+    GraphQLString
 } = require('graphql');
 const {
     Kind

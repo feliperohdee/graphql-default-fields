@@ -1,10 +1,8 @@
 const _ = require('lodash');
 const chai = require('chai');
 const sinon = require('sinon');
-const sinonChai = require('sinon-chai');
 const {
     GraphQLSchema,
-    GraphQLObjectType,
     GraphQLString,
     graphql
 } = require('graphql');
@@ -13,21 +11,9 @@ const expect = chai.expect;
 const withDefaults = require('./')();
 const Query = require('./testing');
 
-chai.use(sinonChai);
-
 describe('index.js', () => {
-    let cache;
-    let cached = Symbol;
-
     beforeEach(() => {
         sinon.spy(_, 'extend');
-        cache = {
-            get: sinon.stub()
-                .onFirstCall()
-                .returns(null)
-                .returns(cached),
-            set: sinon.stub(),
-        };
     });
 
     afterEach(() => {
