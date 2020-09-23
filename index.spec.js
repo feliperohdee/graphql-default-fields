@@ -38,10 +38,10 @@ describe('index.js', () => {
         expect(_.every(newQuery.getFields(), field => !field.__withDefaults)).to.be.true;
     });
 
-    it('should match by obj defaultValue', done => {
+    it('should match by objectDefault', done => {
         const Query = new withDefaults.GraphQLObjectType({
             name: 'Obj',
-            defaultValue: {
+            objectDefault: {
                 a: 'a',
                 b: 'b',
                 c: {

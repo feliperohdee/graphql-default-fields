@@ -63,14 +63,14 @@ const fields = {
     },
     booleanWithDefault: {
         type: GraphQLBoolean,
-        defaultValue: true
+        fieldDefault: true
     },
     float: {
         type: GraphQLFloat
     },
     floatWithDefault: {
         type: GraphQLFloat,
-        defaultValue: 10.5
+        fieldDefault: 10.5
     },
     wrongFloat: {
         type: GraphQLFloat,
@@ -79,14 +79,14 @@ const fields = {
     wrongFloatWithDefault: {
         type: GraphQLFloat,
         resolve: () => '10.5',
-        defaultValue: 10.5
+        fieldDefault: 10.5
     },
     int: {
         type: GraphQLInt
     },
     intWithDefault: {
         type: GraphQLInt,
-        defaultValue: 10
+        fieldDefault: 10
     },
     wrongInt: {
         type: GraphQLInt,
@@ -95,14 +95,14 @@ const fields = {
     wrongIntWithDefault: {
         type: GraphQLInt,
         resolve: () => '10.5',
-        defaultValue: 10
+        fieldDefault: 10
     },
     json: {
         type: Json
     },
     jsonWithDefault: {
         type: Json,
-        defaultValue: {
+        fieldDefault: {
             json: 'json'
         }
     },
@@ -111,14 +111,14 @@ const fields = {
     },
     listWithDefault: {
         type: new GraphQLList(GraphQLString),
-        defaultValue: ['string']
+        fieldDefault: ['string']
     },
     string: {
         type: GraphQLString
     },
     stringWithDefault: {
         type: GraphQLString,
-        defaultValue: 'stringValue'
+        fieldDefault: 'stringValue'
     }
 };
 
@@ -161,7 +161,7 @@ const Query = new withDefaults.GraphQLObjectType({
         },
         booleanWithDefault: {
             type: GraphQLBoolean,
-            defaultValue: true
+            fieldDefault: true
         },
         booleanWithNull: {
             type: GraphQLBoolean,
@@ -185,7 +185,7 @@ const Query = new withDefaults.GraphQLObjectType({
         },
         floatWithDefault: {
             type: GraphQLFloat,
-            defaultValue: 10.5
+            fieldDefault: 10.5
         },
         floatWithNull: {
             type: GraphQLFloat,
@@ -209,7 +209,7 @@ const Query = new withDefaults.GraphQLObjectType({
         },
         intWithDefault: {
             type: GraphQLInt,
-            defaultValue: 10
+            fieldDefault: 10
         },
         intWithNull: {
             type: GraphQLInt,
@@ -233,7 +233,7 @@ const Query = new withDefaults.GraphQLObjectType({
         },
         jsonWithDefault: {
             type: Json,
-            defaultValue: {
+            fieldDefault: {
                 json: 'json'
             }
         },
@@ -263,7 +263,7 @@ const Query = new withDefaults.GraphQLObjectType({
         },
         listWithDefault: {
             type: new GraphQLList(GraphQLString),
-            defaultValue: ['string']
+            fieldDefault: ['string']
         },
         listWithNull: {
             type: new GraphQLList(GraphQLString),
@@ -401,7 +401,7 @@ const Query = new withDefaults.GraphQLObjectType({
         },
         stringWithDefault: {
             type: GraphQLString,
-            defaultValue: 'stringValue'
+            fieldDefault: 'stringValue'
         },
         stringWithNull: {
             type: GraphQLString,

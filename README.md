@@ -39,26 +39,29 @@ It normalizes graphql fields to return "zero valued" values when inexistent.
             
             const ObjWithDefaults = new withDefaults.GraphQLObjectType({
                 name: 'ObjWithDefaults',
+                objectDefault: {
+                    boolean: true
+                },
                 fields: {
                     boolean: {
                         type: GraphQLBoolean,
-                        defaultValue: true
+                        fieldDefault: true
                     },
                     float: {
                         type: GraphQLFloat,
-                        defaultValue: 10.5
+                        fieldDefault: 10.5
                     },
                     int: {
                         type: GraphQLInt,
-                        defaultValue: 10
+                        fieldDefault: 10
                     },
                     list: {
                         type: new GraphQLList(GraphQLString),
-                        defaultValue: ['string']
+                        fieldDefault: ['string']
                     },
                     string: {
                         type: GraphQLString,
-                        defaultValue: 'string'
+                        fieldDefault: 'string'
                     }
                 }
             });

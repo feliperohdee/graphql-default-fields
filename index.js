@@ -28,16 +28,16 @@ const matchDefault = type => {
     return defaultType;
 };
 
-let extendField = (field, key, realm, typeDefaultValue) => {
+let extendField = (field, key, realm, objectDefault) => {
     const isObjectType = field.type instanceof realm;
     const type = isObjectType ? 'Object' : field.type.toString();
-    const defaultValue = field.defaultValue ||
-        typeDefaultValue ||
+    const fieldDefault = field.fieldDefault ||
+        objectDefault ||
         matchDefault(type);
 
     const responseOrDefault = response => {
         if (_.isNil(response)) {
-            return defaultValue;
+            return fieldDefault;
         }
 
         if (type === 'Int') {
@@ -75,13 +75,13 @@ module.exports = (realm = GraphQLObjectType) => {
         GraphQLObjectType: class extends realm {
             constructor(args) {
                 const fields = _.isFunction(args.fields) ? args.fields() : args.fields;
-                const typeDefaultValue = args.defaultValue;
+                const objectDefault = args.objectDefault;
 
                 args.fields = _.reduce(fields, (reduction, field, key) => {
                     if (field.__preventDefaults) {
                         reduction[key] = field;
                     } else {
-                        reduction[key] = extendField(field, key, realm, typeDefaultValue && typeDefaultValue[key]);
+                        reduction[key] = extendField(field, key, realm, objectDefault && objectDefault[key]);
                     }
 
                     return reduction;
