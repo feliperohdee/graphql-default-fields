@@ -28,10 +28,12 @@ const matchDefault = type => {
     return defaultType;
 };
 
-let extendField = (field, key, realm) => {
+let extendField = (field, key, realm, typeDefaultValue) => {
     const isObjectType = field.type instanceof realm;
     const type = isObjectType ? 'Object' : field.type.toString();
-    const defaultValue = field.defaultValue || matchDefault(type);
+    const defaultValue = field.defaultValue ||
+        typeDefaultValue ||
+        matchDefault(type);
 
     const responseOrDefault = response => {
         if (_.isNil(response)) {
@@ -46,10 +48,10 @@ let extendField = (field, key, realm) => {
     };
 
     const resolve = field.resolve ? (obj, args, context, info) => {
-        if(obj && obj.__default__) {
+        if (obj && obj.__default__) {
             return responseOrDefault();
-        } 
-        
+        }
+
         const resolved = field.resolve(obj, args, context, info);
 
         if (resolved && resolved.then) {
@@ -69,25 +71,24 @@ let extendField = (field, key, realm) => {
 };
 
 module.exports = (realm = GraphQLObjectType) => {
-    class WithDefaults extends realm {
-        constructor(args) {
-            const fields = _.isFunction(args.fields) ? args.fields() : args.fields;
-
-            args.fields = _.reduce(fields, (reduction, field, key) => {
-                if (field.__preventDefaults) {
-                    reduction[key] = field;
-                } else {
-                    reduction[key] = extendField(field, key, realm);
-                }
-
-                return reduction;
-            }, {});
-
-            super(args);
-        }
-    }
-
     return {
-        GraphQLObjectType: WithDefaults
+        GraphQLObjectType: class extends realm {
+            constructor(args) {
+                const fields = _.isFunction(args.fields) ? args.fields() : args.fields;
+                const typeDefaultValue = args.defaultValue;
+
+                args.fields = _.reduce(fields, (reduction, field, key) => {
+                    if (field.__preventDefaults) {
+                        reduction[key] = field;
+                    } else {
+                        reduction[key] = extendField(field, key, realm, typeDefaultValue && typeDefaultValue[key]);
+                    }
+
+                    return reduction;
+                }, {});
+
+                super(args);
+            }
+        }
     };
 };

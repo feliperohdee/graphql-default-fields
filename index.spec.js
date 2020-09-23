@@ -38,6 +38,43 @@ describe('index.js', () => {
         expect(_.every(newQuery.getFields(), field => !field.__withDefaults)).to.be.true;
     });
 
+    it('should match by obj defaultValue', done => {
+        const Query = new withDefaults.GraphQLObjectType({
+            name: 'Obj',
+            defaultValue: {
+                a: 'a',
+                b: 'b'
+            },
+            fields: {
+                a: {
+                    type: GraphQLString
+                },
+                b: {
+                    type: GraphQLString
+                }
+            }
+        });
+
+        const schema = new GraphQLSchema({
+            query: Query
+        });
+
+        graphql({
+                schema,
+                source: `{
+                    a
+                    b
+                }`
+            })
+            .then(response => {
+                expect(response.data).to.deep.equal({
+                    a: 'a',
+                    b: 'b'
+                });
+                done();
+            });
+    });
+
     it('should match complex object', done => {
         const schema = new GraphQLSchema({
             query: Query
