@@ -43,7 +43,13 @@ describe('index.js', () => {
             name: 'Obj',
             defaultValue: {
                 a: 'a',
-                b: 'b'
+                b: 'b',
+                c: {
+                    d: 'd'
+                },
+                d: {
+                    e: 'e'
+                }
             },
             fields: {
                 a: {
@@ -51,6 +57,26 @@ describe('index.js', () => {
                 },
                 b: {
                     type: GraphQLString
+                },
+                c: {
+                    type: new withDefaults.GraphQLObjectType({
+                        name: 'Obj2',
+                        fields: {
+                            d: {
+                                type: GraphQLString
+                            }
+                        }
+                    })
+                },
+                d: {
+                    type: new withDefaults.GraphQLObjectType({
+                        name: 'Obj3',
+                        fields: {
+                            e: {
+                                type: GraphQLString
+                            }
+                        }
+                    })
                 }
             }
         });
@@ -64,12 +90,27 @@ describe('index.js', () => {
                 source: `{
                     a
                     b
-                }`
+                    c {
+                        d
+                    }
+                    d {
+                        e
+                    }
+                }`,
+                rootValue: {
+                    d: {}
+                }
             })
             .then(response => {
                 expect(response.data).to.deep.equal({
                     a: 'a',
-                    b: 'b'
+                    b: 'b',
+                    c: {
+                        d: 'd'
+                    },
+                    d: {
+                        e: ''
+                    }
                 });
                 done();
             });
