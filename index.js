@@ -65,8 +65,7 @@ let extendField = (field, key, realm, objectDefault) => {
 
     return {
         ...field,
-        resolve,
-        __withDefaults: true
+        resolve
     };
 };
 

@@ -20,24 +20,6 @@ describe('index.js', () => {
         _.extend.restore();
     });
 
-    it('should let __withDefaults for each field', () => {
-        expect(_.every(Query.getFields(), field => field.__withDefaults === true)).to.be.true;
-    });
-
-    it('should prevent when __preventDefaults', () => {
-        const newQuery = new withDefaults.GraphQLObjectType({
-            name: 'Prevented',
-            fields: {
-                string: {
-                    __preventDefaults: true,
-                    type: GraphQLString
-                }
-            }
-        });
-
-        expect(_.every(newQuery.getFields(), field => !field.__withDefaults)).to.be.true;
-    });
-
     it('should match by objectDefault', done => {
         const Query = new withDefaults.GraphQLObjectType({
             name: 'Obj',
@@ -49,6 +31,12 @@ describe('index.js', () => {
                 },
                 d: {
                     e: 'e'
+                },
+                e: {
+                    f: 'f'
+                },
+                f: {
+                    g: 'g'
                 }
             },
             fields: {
@@ -77,6 +65,28 @@ describe('index.js', () => {
                             }
                         }
                     })
+                },
+                e: {
+                    type: new withDefaults.GraphQLObjectType({
+                        name: 'Obj4',
+                        fields: {
+                            f: {
+                                __preventDefaults: true,
+                                type: GraphQLString
+                            }
+                        }
+                    })
+                },
+                f: {
+                    type: new withDefaults.GraphQLObjectType({
+                        name: 'Obj5',
+                        fields: {
+                            g: {
+                                fieldDefault: 'G',
+                                type: GraphQLString
+                            }
+                        }
+                    })
                 }
             }
         });
@@ -96,9 +106,17 @@ describe('index.js', () => {
                     d {
                         e
                     }
+                    e {
+                        f
+                    }
+                    f {
+                        g
+                    }
                 }`,
                 rootValue: {
-                    d: {}
+                    d: {},
+                    e: {},
+                    f: {}
                 }
             })
             .then(response => {
@@ -110,6 +128,12 @@ describe('index.js', () => {
                     },
                     d: {
                         e: ''
+                    },
+                    e: {
+                        f: null
+                    },
+                    f: {
+                        g: 'G'
                     }
                 });
                 done();
